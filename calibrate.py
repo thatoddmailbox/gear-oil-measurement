@@ -8,7 +8,7 @@ vna = nv.connect()
 ### calibration ###
 #calculate the frequency range for the tdr lab
 #use a frequency range with 101 steps (102 when including the extrapolated DC value)
-fwithDC = np.linspace(0,1.01e9,102)
+fwithDC = np.linspace(1e9,4e9,102)
 
 #set the frequencies
 vna.setSweep(fwithDC[1],fwithDC[-1])
