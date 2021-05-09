@@ -12,7 +12,7 @@ calibration.load("calibration.txt")
 # connect to nanovna
 vna = nv.connect()
 
-fwithDC = np.linspace(0,1.01e9,102)
+fwithDC = np.linspace(1e9,4e9,102)
 
 vna.setSweep(fwithDC[1],fwithDC[-1])
 
