@@ -100,6 +100,8 @@ from time import sleep, strftime, localtime
 from typing import List
 from typing import Iterator, List, NamedTuple, Tuple
 
+sys.path.append("../nanovna-saver")
+
 from NanoVNASaver.Formatting import format_frequency, format_vswr, format_gain
 from NanoVNASaver.Hardware.Hardware import Interface, get_interfaces, get_VNA
 from NanoVNASaver.Hardware.VNA import VNA
