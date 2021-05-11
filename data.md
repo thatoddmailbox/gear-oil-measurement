@@ -4,6 +4,8 @@ Can 3 is smallest!
 ## Can 3 in oil
 1.42 L - 0.284 L = 1.136 L of oil
 
+This Q_0 is with the single-point approximation. Eventually it will hopefully be replaced by the least squares circle fit stuff.
+
 | Trial # | Initial cup mass (g) | Final cup mass (g) | Change in mass (g) | Q_0   |
 | ------- | -------------------- | ------------------ | ------------------ | ----- |
 |    0    | n/a                  | n/a                | n/a                | 57.24 |
