@@ -28,7 +28,7 @@ plt.plot(f/1e9,20*np.log10(np.abs(s11)),label='S11')
 plt.xlabel('Frequency (GHz)')
 plt.ylabel('S parameter (dB)')
 plt.ylim(-80,5)
-# plt.show()
+plt.show()
 
 plt.plot(f/1e9,np.angle(s11),label='S11')
 # plt.plot(f/1e9,np.angle(s21),label='S21')
@@ -39,3 +39,18 @@ plt.ylim(-np.pi,np.pi)
 
 resonant_frequency = 2.879 * 1e9
 resonant_s11 = closest_point(ts.s11data, resonant_frequency)
+
+half_power = -3 # dB
+first = True
+above = False
+intercepts = []
+for p in ts.s11data:
+	value = 20*np.log10(np.abs(p.z))
+	if first:
+		first = False
+		above = value > half_power
+		continue
+	if (above and value < half_power) or (not above and value > half_power):
+		above = not above
+		intercepts.append(p.freq)
+print(intercepts)
