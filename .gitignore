@@ -139,6 +139,7 @@ cython_debug/
 
 # VNA calibration
 calibration.txt
+*-points
 
 # Data
 *.s1p
