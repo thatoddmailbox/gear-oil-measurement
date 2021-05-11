@@ -53,4 +53,19 @@ for p in ts.s11data:
 	if (above and value < half_power) or (not above and value > half_power):
 		above = not above
 		intercepts.append(p.freq)
-print(intercepts)
+
+assert(len(intercepts) >= 2)
+
+first_intercept = None
+second_intercept = None
+for intercept in intercepts:
+	if intercept > resonant_frequency:
+		second_intercept = intercept
+		break
+	first_intercept = intercept
+half_power_bandwidth = second_intercept - first_intercept
+print(first_intercept, second_intercept, "half power bandwidth:", half_power_bandwidth)
+
+# Q_loaded = half power bandwidth
+q_loaded = resonant_frequency / half_power_bandwidth
+print(q_loaded)
