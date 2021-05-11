@@ -37,10 +37,24 @@ plt.ylabel('Phase (rad)')
 plt.ylim(-np.pi,np.pi)
 # plt.show()
 
-resonant_frequency = 2.879 * 1e9
-resonant_s11 = closest_point(ts.s11data, resonant_frequency)
+resonant_frequency = 2.700 * 1e9
 
-half_power = -3 # dB
+lowest_s11_freq = None
+lowest_s11 = None
+for p in ts.s11data:
+	# print(p.freq, p.gain)
+	if not lowest_s11 or abs(p.gain) > lowest_s11:
+		lowest_s11_freq = p.freq
+		lowest_s11 = abs(p.gain)
+print("lowest_s11_freq", lowest_s11_freq)
+resonant_frequency = lowest_s11_freq
+
+resonant_s11 = closest_point(ts.s11data, resonant_frequency)
+resonant_gain = resonant_s11.gain
+print("resonant gain:", resonant_gain)
+
+half_power = resonant_gain + 3
+print("half power:", half_power)
 first = True
 above = False
 intercepts = []
@@ -55,6 +69,8 @@ for p in ts.s11data:
 		intercepts.append(p.freq)
 
 assert(len(intercepts) >= 2)
+print(resonant_frequency)
+print(intercepts)
 
 first_intercept = None
 second_intercept = None
@@ -68,15 +84,34 @@ print(first_intercept, second_intercept, "half power bandwidth:", half_power_ban
 
 # Q_loaded = half power bandwidth
 q_loaded = resonant_frequency / half_power_bandwidth
-print(q_loaded)
+print("q_loaded:", q_loaded)
 
+resonance_band_from = 2.500 * 1e9
+resonance_band_to = 2.870 * 1e9
+# https://media.proquest.com/media/hms/ORIG/1/7ZvgC?hl=&cit%3Aauth=Shahid%2C+S%3BBall%2C+J+A+R%3BWells%2C+C+G%3BWen%2C+P&cit%3Atitle=Reflection+type+Q-factor+measurement+using+standard+least+squares+methods&cit%3Apub=IEE+proceedings.+Microwaves%2C+antennas+and+propagation.&cit%3Avol=5&cit%3Aiss=4&cit%3Apg=426&cit%3Adate=Mar+2011&ic=true&cit%3Aprod=Advanced+Technologies+%26+Aerospace+Collection&_a=ChgyMDIxMDUxMDIwMjIwMjQzNjo2Nzk2MDESBjEwMDg2NRoKT05FX1NFQVJDSCIMMTguMTguMjM5LjE2KgcxOTM2MzYxMgoxNjM2NzAyNTA1Og1Eb2N1bWVudEltYWdlQgEwUgZPbmxpbmVaAkZUYgNQRlRqCjIwMTEvMDMvMDFyCjIwMTEvMDMvMzF6AIIBKVAtMTAwNzg1Mi0xMjQ5Mi1DVVNUT01FUi0xMDAwMDIzMy01MDQ4NjM5kgEGT25saW5lygFMTW96aWxsYS81LjAgKFgxMTsgVWJ1bnR1OyBMaW51eCB4ODZfNjQ7IHJ2Ojg3LjApIEdlY2tvLzIwMTAwMTAxIEZpcmVmb3gvODcuMNIBElNjaG9sYXJseSBKb3VybmFsc5oCB1ByZVBhaWSqAi5PUzpFTVMtRG9jVmlld1BkZlVybFNlcnZpY2UtZ2V0TWVkaWFVcmxGb3JJdGVtygIPQXJ0aWNsZXxGZWF0dXJl0gIBWeICAU7yAgD6AgFOggMDV2ViigMcQ0lEOjIwMjEwNTEwMjAyMjAyNDMyOjg1Mzg4Mg%3D%3D&_s=3xxU4Nz07bp9dqMrWeemRkVM%2FxI%3D
 # now that we have q, find gamma L, the closest to origin
 gamma_L = None
 gamma_L_dist = None
 for p in ts.s11data:
-	gamma = reflection_coefficient(p.z)
+	if p.freq < resonance_band_from or p.freq > resonance_band_to:
+		continue
+	gamma = p.z
 	distance = abs(gamma)
-	if not gamma_L_dist or distance > gamma_L_dist:
+	if not gamma_L_dist or distance < gamma_L_dist:
+		# print(p, distance)
 		gamma_L = gamma
 		gamma_L_dist = distance
-print(gamma_L)
+print("gamma_L:", gamma_L)
+
+gamma_L_angle = np.angle(gamma_L, deg=False)
+print("gamma_L angle (radians):", gamma_L_angle)
+print("gamma_L angle (degrees):", np.rad2deg(gamma_L_angle))
+
+diameter = 1 - abs(gamma_L)
+print("diameter:", diameter)
+
+kappa = diameter / (2 - diameter)
+print("kappa:", kappa)
+
+q_unloaded = q_loaded*(1 + kappa)
+print("q_unloaded:", q_unloaded)
