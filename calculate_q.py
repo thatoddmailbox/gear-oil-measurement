@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from typing import List
 
 from NanoVNASaver.Calibration import Calibration
-from NanoVNASaver.RFTools import Datapoint
+from NanoVNASaver.RFTools import Datapoint, reflection_coefficient
 from NanoVNASaver.Touchstone import Options, Touchstone
 
 def closest_point(data: List[Datapoint], freq: int) -> Datapoint:
@@ -69,3 +69,14 @@ print(first_intercept, second_intercept, "half power bandwidth:", half_power_ban
 # Q_loaded = half power bandwidth
 q_loaded = resonant_frequency / half_power_bandwidth
 print(q_loaded)
+
+# now that we have q, find gamma L, the closest to origin
+gamma_L = None
+gamma_L_dist = None
+for p in ts.s11data:
+	gamma = reflection_coefficient(p.z)
+	distance = abs(gamma)
+	if not gamma_L_dist or distance > gamma_L_dist:
+		gamma_L = gamma
+		gamma_L_dist = distance
+print(gamma_L)
