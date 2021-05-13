@@ -16,7 +16,7 @@ from scipy import optimize
 from numpy import sqrt
 from math import pi, sin, cos
 
-def plot_s11(ts: Touchstone):
+def plot_s11(ts: Touchstone, circle: (float, float, float)):
 	f = np.array([d.freq for d in ts.s11data])
 	s11 = np.array([d.z for d in ts.s11data])
 
@@ -36,26 +36,7 @@ def plot_s11(ts: Touchstone):
 
 	plt.figure(figsize=(6, 6))
 
-	s11_re = np.array([d.re for d in ts.s11data])
-	s11_im = np.array([d.im for d in ts.s11data])
-	# print(s11_re)
-
-	def calc_R(xc, yc):
-		""" calculate the distance of each 2D points from the center (xc, yc) """
-		return sqrt((s11_re-xc)**2 + (s11_im-yc)**2)
-
-	def f_2(c):
-		""" calculate the algebraic distance between the data points and the mean circle centered at c=(xc, yc) """
-		Ri = calc_R(*c)
-		return Ri - Ri.mean()
-
-	center_estimate = 0, 0
-	center_2, ier = optimize.leastsq(f_2, center_estimate)
-
-	xc_2, yc_2 = center_2
-	Ri_2       = calc_R(*center_2)
-	R_2        = Ri_2.mean()
-	residu_2   = sum((Ri_2 - R_2)**2)
+	xc_2, yc_2, R_2 = circle
 	print(xc_2, yc_2)
 	print(R_2)
 	circle_points = []
@@ -133,10 +114,35 @@ def calculate_half_power_bandwidth(ts: Touchstone, resonant_gain: float) -> floa
 
 	return half_power_bandwidth
 
+def fit_circle(ts: Touchstone) -> (float, float, float):
+	s11_re = np.array([d.re for d in ts.s11data])
+	s11_im = np.array([d.im for d in ts.s11data])
+	# print(s11_re)
+
+	def calc_R(xc, yc):
+		""" calculate the distance of each 2D points from the center (xc, yc) """
+		return sqrt((s11_re-xc)**2 + (s11_im-yc)**2)
+
+	def f_2(c):
+		""" calculate the algebraic distance between the data points and the mean circle centered at c=(xc, yc) """
+		Ri = calc_R(*c)
+		return Ri - Ri.mean()
+
+	center_estimate = 0, 0
+	center_2, ier = optimize.leastsq(f_2, center_estimate)
+
+	xc_2, yc_2 = center_2
+	Ri_2       = calc_R(*center_2)
+	R_2        = Ri_2.mean()
+	residu_2   = sum((Ri_2 - R_2)**2)
+
+	return (xc_2, yc_2, R_2)
+
 ts = Touchstone("./data_filings/can3_oil_aluminum_3_fine.s1p")
 ts.load()
 
-plot_s11(ts)
+circle = fit_circle(ts)
+plot_s11(ts, circle)
 
 resonant_frequency = calculate_resonance_frequency(ts)
 print("resonant_frequency", resonant_frequency)
