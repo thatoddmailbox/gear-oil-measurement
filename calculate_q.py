@@ -8,6 +8,24 @@ from NanoVNASaver.Calibration import Calibration
 from NanoVNASaver.RFTools import Datapoint, reflection_coefficient
 from NanoVNASaver.Touchstone import Options, Touchstone
 
+def plot_s11(ts: Touchstone):
+	f = np.array([d.freq for d in ts.s11data])
+	s11 = np.array([d.z for d in ts.s11data])
+
+	plt.plot(f/1e9,20*np.log10(np.abs(s11)),label='S11')
+	# plt.plot(f/1e9,20*np.log10(np.abs(s21)),label='S21')
+	plt.xlabel('Frequency (GHz)')
+	plt.ylabel('S parameter (dB)')
+	plt.ylim(-80,5)
+	plt.show()
+
+	plt.plot(f/1e9,np.angle(s11),label='S11')
+	# plt.plot(f/1e9,np.angle(s21),label='S21')
+	plt.xlabel('Frequency (GHz)')
+	plt.ylabel('Phase (rad)')
+	plt.ylim(-np.pi,np.pi)
+	# plt.show()
+
 def closest_point(data: List[Datapoint], freq: int) -> Datapoint:
 	closest = None
 	closest_dist = None
@@ -27,25 +45,46 @@ def calculate_resonance_frequency(ts: Touchstone) -> float:
 			lowest_s11 = abs(p.gain)
 	return lowest_s11_freq
 
+def calculate_half_power_bandwidth(ts: Touchstone, resonant_gain: float) -> float:
+	# find half power value in decibels
+	half_power = resonant_gain + 3
+	print("half power:", half_power)
+
+	# find intercepts at half power value
+	first = True
+	above = False
+	intercepts = []
+	for p in ts.s11data:
+		value = 20*np.log10(np.abs(p.z))
+		if first:
+			first = False
+			above = value > half_power
+			continue
+		if (above and value < half_power) or (not above and value > half_power):
+			above = not above
+			intercepts.append(p.freq)
+
+	assert(len(intercepts) >= 2)
+	print(resonant_frequency)
+	print(intercepts)
+
+	# find intercepts of half power
+	first_intercept = None
+	second_intercept = None
+	for intercept in intercepts:
+		if intercept > resonant_frequency:
+			second_intercept = intercept
+			break
+		first_intercept = intercept
+	half_power_bandwidth = second_intercept - first_intercept
+	print(first_intercept, second_intercept, "half power bandwidth:", half_power_bandwidth)
+
+	return half_power_bandwidth
+
 ts = Touchstone("./can3_oil_aluminum_fine.s1p")
 ts.load()
 
-f = np.array([d.freq for d in ts.s11data])
-s11 = np.array([d.z for d in ts.s11data])
-
-plt.plot(f/1e9,20*np.log10(np.abs(s11)),label='S11')
-# plt.plot(f/1e9,20*np.log10(np.abs(s21)),label='S21')
-plt.xlabel('Frequency (GHz)')
-plt.ylabel('S parameter (dB)')
-plt.ylim(-80,5)
-plt.show()
-
-plt.plot(f/1e9,np.angle(s11),label='S11')
-# plt.plot(f/1e9,np.angle(s21),label='S21')
-plt.xlabel('Frequency (GHz)')
-plt.ylabel('Phase (rad)')
-plt.ylim(-np.pi,np.pi)
-# plt.show()
+plot_s11(ts)
 
 resonant_frequency = calculate_resonance_frequency(ts)
 print("resonant_frequency", resonant_frequency)
@@ -54,34 +93,7 @@ resonant_s11 = closest_point(ts.s11data, resonant_frequency)
 resonant_gain = resonant_s11.gain
 print("resonant gain:", resonant_gain)
 
-half_power = resonant_gain + 3
-print("half power:", half_power)
-first = True
-above = False
-intercepts = []
-for p in ts.s11data:
-	value = 20*np.log10(np.abs(p.z))
-	if first:
-		first = False
-		above = value > half_power
-		continue
-	if (above and value < half_power) or (not above and value > half_power):
-		above = not above
-		intercepts.append(p.freq)
-
-assert(len(intercepts) >= 2)
-print(resonant_frequency)
-print(intercepts)
-
-first_intercept = None
-second_intercept = None
-for intercept in intercepts:
-	if intercept > resonant_frequency:
-		second_intercept = intercept
-		break
-	first_intercept = intercept
-half_power_bandwidth = second_intercept - first_intercept
-print(first_intercept, second_intercept, "half power bandwidth:", half_power_bandwidth)
+half_power_bandwidth = calculate_half_power_bandwidth(ts, resonant_gain)
 
 # Q_loaded = half power bandwidth
 q_loaded = resonant_frequency / half_power_bandwidth
