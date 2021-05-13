@@ -12,6 +12,10 @@ import sys
 sys.path.append("../pySmithPlot/")
 from smithplot import SmithAxes
 
+from scipy import optimize
+from numpy import sqrt
+from math import pi, sin, cos
+
 def plot_s11(ts: Touchstone):
 	f = np.array([d.freq for d in ts.s11data])
 	s11 = np.array([d.z for d in ts.s11data])
@@ -32,15 +36,42 @@ def plot_s11(ts: Touchstone):
 
 	plt.figure(figsize=(6, 6))
 
+	s11_re = np.array([d.re for d in ts.s11data])
+	s11_im = np.array([d.im for d in ts.s11data])
+	# print(s11_re)
+
+	def calc_R(xc, yc):
+		""" calculate the distance of each 2D points from the center (xc, yc) """
+		return sqrt((s11_re-xc)**2 + (s11_im-yc)**2)
+
+	def f_2(c):
+		""" calculate the algebraic distance between the data points and the mean circle centered at c=(xc, yc) """
+		Ri = calc_R(*c)
+		return Ri - Ri.mean()
+
+	center_estimate = 0, 0
+	center_2, ier = optimize.leastsq(f_2, center_estimate)
+
+	xc_2, yc_2 = center_2
+	Ri_2       = calc_R(*center_2)
+	R_2        = Ri_2.mean()
+	residu_2   = sum((Ri_2 - R_2)**2)
+	print(xc_2, yc_2)
+	print(R_2)
+	circle_points = []
+	for i in range(0, 360):
+		x = R_2 * cos(i * (pi / 180))
+		y = R_2 * sin(i * (pi / 180))
+		x += xc_2
+		y += yc_2
+		circle_points.append(x + y*1j)
+
 	ax = plt.subplot(1, 1, 1, projection='smith')
 	# plt.plot([10, 100], markevery=1)
-	print(s11[0])
 
-	# plt.plot(200 + 100j, datatype=SmithAxes.Z_PARAMETER)
 	plt.plot(s11, label="default", datatype=SmithAxes.S_PARAMETER)
-	# plt.plot(50 * val2, markevery=1, label="interpolate=3", interpolate=3, datatype=SmithAxes.Z_PARAMETER)
-	# plt.plot(val1, markevery=1, label="equipoints=22", equipoints=22, datatype=SmithAxes.S_PARAMETER)
-	# plt.plot(val2, markevery=3, label="equipoints=22, \nmarkevery=3", equipoints=22, datatype=SmithAxes.S_PARAMETER)
+	plt.plot(xc_2 + 1j*yc_2)
+	plt.plot(circle_points, linewidth=0.25)
 
 	leg = plt.legend(loc="lower right", fontsize=12)
 	plt.title("Smith Chart")
@@ -102,7 +133,7 @@ def calculate_half_power_bandwidth(ts: Touchstone, resonant_gain: float) -> floa
 
 	return half_power_bandwidth
 
-ts = Touchstone("./can3_oil_aluminum_fine.s1p")
+ts = Touchstone("./data_filings/can3_oil_aluminum_3_fine.s1p")
 ts.load()
 
 plot_s11(ts)
