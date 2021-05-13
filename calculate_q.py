@@ -8,6 +8,10 @@ from NanoVNASaver.Calibration import Calibration
 from NanoVNASaver.RFTools import Datapoint, reflection_coefficient
 from NanoVNASaver.Touchstone import Options, Touchstone
 
+import sys
+sys.path.append("../pySmithPlot/")
+from smithplot import SmithAxes
+
 def plot_s11(ts: Touchstone):
 	f = np.array([d.freq for d in ts.s11data])
 	s11 = np.array([d.z for d in ts.s11data])
@@ -17,7 +21,7 @@ def plot_s11(ts: Touchstone):
 	plt.xlabel('Frequency (GHz)')
 	plt.ylabel('S parameter (dB)')
 	plt.ylim(-80,5)
-	plt.show()
+	# plt.show()
 
 	plt.plot(f/1e9,np.angle(s11),label='S11')
 	# plt.plot(f/1e9,np.angle(s21),label='S21')
@@ -25,6 +29,23 @@ def plot_s11(ts: Touchstone):
 	plt.ylabel('Phase (rad)')
 	plt.ylim(-np.pi,np.pi)
 	# plt.show()
+
+	plt.figure(figsize=(6, 6))
+
+	ax = plt.subplot(1, 1, 1, projection='smith')
+	# plt.plot([10, 100], markevery=1)
+	print(s11[0])
+
+	# plt.plot(200 + 100j, datatype=SmithAxes.Z_PARAMETER)
+	plt.plot(s11, label="default", datatype=SmithAxes.S_PARAMETER)
+	# plt.plot(50 * val2, markevery=1, label="interpolate=3", interpolate=3, datatype=SmithAxes.Z_PARAMETER)
+	# plt.plot(val1, markevery=1, label="equipoints=22", equipoints=22, datatype=SmithAxes.S_PARAMETER)
+	# plt.plot(val2, markevery=3, label="equipoints=22, \nmarkevery=3", equipoints=22, datatype=SmithAxes.S_PARAMETER)
+
+	leg = plt.legend(loc="lower right", fontsize=12)
+	plt.title("Smith Chart")
+
+	plt.show()
 
 def closest_point(data: List[Datapoint], freq: int) -> Datapoint:
 	closest = None
