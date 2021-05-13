@@ -17,7 +17,17 @@ def closest_point(data: List[Datapoint], freq: int) -> Datapoint:
 			closest_dist = abs(point.freq - freq)
 	return closest
 
-ts = Touchstone("./test1_good.s1p")
+def calculate_resonance_frequency(ts: Touchstone) -> float:
+	lowest_s11_freq = None
+	lowest_s11 = None
+	for p in ts.s11data:
+		# print(p.freq, p.gain)
+		if not lowest_s11 or abs(p.gain) > lowest_s11:
+			lowest_s11_freq = p.freq
+			lowest_s11 = abs(p.gain)
+	return lowest_s11_freq
+
+ts = Touchstone("./can3_oil_aluminum_fine.s1p")
 ts.load()
 
 f = np.array([d.freq for d in ts.s11data])
@@ -37,17 +47,8 @@ plt.ylabel('Phase (rad)')
 plt.ylim(-np.pi,np.pi)
 # plt.show()
 
-resonant_frequency = 2.700 * 1e9
-
-lowest_s11_freq = None
-lowest_s11 = None
-for p in ts.s11data:
-	# print(p.freq, p.gain)
-	if not lowest_s11 or abs(p.gain) > lowest_s11:
-		lowest_s11_freq = p.freq
-		lowest_s11 = abs(p.gain)
-print("lowest_s11_freq", lowest_s11_freq)
-resonant_frequency = lowest_s11_freq
+resonant_frequency = calculate_resonance_frequency(ts)
+print("resonant_frequency", resonant_frequency)
 
 resonant_s11 = closest_point(ts.s11data, resonant_frequency)
 resonant_gain = resonant_s11.gain
