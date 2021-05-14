@@ -78,10 +78,11 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 	# plt.plot([10, 100], markevery=1)
 
 	plt.plot(s11, label="default", datatype=SmithAxes.S_PARAMETER)
-	plt.plot(xc_2 + 1j*yc_2)
+	plt.plot(trim_s11, label="default", datatype=SmithAxes.S_PARAMETER)
+	# plt.plot(xc_2 + 1j*yc_2)
 	plt.plot(circle_points, linewidth=0.25)
 
-	leg = plt.legend(loc="lower right", fontsize=12)
+	# leg = plt.legend(loc="lower right", fontsize=12)
 	plt.title("Smith Chart")
 
 	plt.show()
