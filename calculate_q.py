@@ -157,7 +157,7 @@ def fit_circle(ts: Touchstone) -> (float, float, float):
 
 	return (xc_2, yc_2, R_2)
 
-filename = "./data_filings/can3_oil_aluminum_12_fine.s1p"
+filename = "./data_water/water_7_1.s1p"
 ts = Touchstone(filename)
 ts.load()
 
