@@ -16,6 +16,24 @@ from scipy import optimize
 from numpy import sqrt
 from math import pi, sin, cos
 
+water_ranges = {
+    './data_water/water_0_0.s1p': (2.518072e9, 3.03012e9),
+    './data_water/water_0_1.s1p': (2.524096e9, 3.03012e9),
+    './data_water/water_1_0.s1p': (2.572289e9, 3.138554e9),
+    './data_water/water_2_0.s1p': (2.596386e9, 3.150602e9),
+    './data_water/water_2_1.s1p': (2.603225806e9, 3.158064516e9),
+    './data_water/water_3_0.s1p': (2.719354839e9, 3.156627e9),
+    './data_water/water_3_1.s1p': (2.609677419e9, 2.987096774e9),
+    './data_water/water_4_0.s1p': (2.706451613e9, 3.156627e9),
+    './data_water/water_4_1.s1p': (2.680645161e9, 3.151612903e9),
+    './data_water/water_5_0.s1p': (2.761290323e9, 3.258064516e9),
+    './data_water/water_5_1.s1p': (2.759036e9, 3.264516129e9),
+    './data_water/water_6_0.s1p': (2.809677419e9, 3.329032258e9),
+    './data_water/water_6_1.s1p': (2.835483871e9, 3.331325e9),
+    './data_water/water_7_0.s1p': (2.861290323e9, 3.331325e9),
+    './data_water/water_7_1.s1p': (2.883870968e9, 3.358064516e9),
+}
+
 def plot_s11(ts: Touchstone, circle: (float, float, float)):
 	f = np.array([d.freq for d in ts.s11data])
 	s11 = np.array([d.z for d in ts.s11data])
@@ -139,8 +157,31 @@ def fit_circle(ts: Touchstone) -> (float, float, float):
 
 	return (xc_2, yc_2, R_2)
 
-ts = Touchstone("./data_filings/can3_oil_aluminum_3_fine.s1p")
+filename = "./data_filings/can3_oil_aluminum_12_fine.s1p"
+ts = Touchstone(filename)
 ts.load()
+
+resonance_band_from = 2.500 * 1e9
+resonance_band_to = 3.0 * 1e9
+if filename in water_ranges:
+	resonance_band_from, resonance_band_to = water_ranges[filename]
+print(resonance_band_from, resonance_band_to)
+
+found_from = False
+index_from = None
+index_to = None
+for i, p in enumerate(ts.s11data):
+	if not found_from:
+		if p.freq < resonance_band_from:
+			continue
+		index_from = i
+		found_from = True
+	else:
+		if p.freq < resonance_band_to:
+			continue
+		index_to = i
+		break
+ts.s11data = ts.s11data[index_from:index_to+1]
 
 circle = fit_circle(ts)
 plot_s11(ts, circle)
