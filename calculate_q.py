@@ -88,6 +88,10 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 		xytext = norm(xc_2 + R_2, yc_2),
 		arrowprops = dict(arrowstyle='<->')
 	)
+	plt.annotate(
+		text = 'd',
+		xy = norm(xc_2 - 0.02, yc_2 + 0.01)
+	)
 
 	# leg = plt.legend(loc="lower right", fontsize=12)
 	plt.title("Smith Chart")
