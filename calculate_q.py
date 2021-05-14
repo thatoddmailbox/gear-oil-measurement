@@ -79,8 +79,8 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 
 	plt.plot(s11, label="default", datatype=SmithAxes.S_PARAMETER)
 	plt.plot(trim_s11, label="default", datatype=SmithAxes.S_PARAMETER)
+	plt.plot(circle_points, color='red', markersize=1)
 	# plt.plot(xc_2 + 1j*yc_2)
-	plt.plot(circle_points, linewidth=0.25)
 
 	plt.annotate(
 		text = '',
