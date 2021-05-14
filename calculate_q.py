@@ -43,6 +43,10 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 	f = np.array([d.freq for d in ts.s11data])
 	s11 = np.array([d.z for d in ts.s11data])
 
+	trim_data = trim_start+trim_end
+	trim_f = np.array([d.freq for d in trim_data])
+	trim_s11 = np.array([d.z for d in trim_data])
+
 	plt.plot(f/1e9,20*np.log10(np.abs(s11)),label='S11')
 	# plt.plot(f/1e9,20*np.log10(np.abs(s21)),label='S21')
 	plt.xlabel('Frequency (GHz)')
