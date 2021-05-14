@@ -39,7 +39,7 @@ def norm(x: float, y: float) -> List[float]:
 	result = (1 + z)/(1 - z)
 	return result.real, result.imag
 
-def plot_s11(ts: Touchstone, circle: (float, float, float)):
+def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Datapoint], trim_end: List[Datapoint]):
 	f = np.array([d.freq for d in ts.s11data])
 	s11 = np.array([d.z for d in ts.s11data])
 
@@ -191,7 +191,7 @@ trim_end = ts.s11data[index_to:]
 ts.s11data = ts.s11data[index_from:index_to+1]
 
 circle = fit_circle(ts)
-plot_s11(ts, circle)
+plot_s11(ts, circle, trim_start, trim_end)
 
 resonant_frequency = calculate_resonance_frequency(ts)
 print("resonant_frequency", resonant_frequency)
