@@ -162,24 +162,25 @@ print("q_loaded:", q_loaded)
 # resonance_band_to = 2.870 * 1e9
 # https://media.proquest.com/media/hms/ORIG/1/7ZvgC?hl=&cit%3Aauth=Shahid%2C+S%3BBall%2C+J+A+R%3BWells%2C+C+G%3BWen%2C+P&cit%3Atitle=Reflection+type+Q-factor+measurement+using+standard+least+squares+methods&cit%3Apub=IEE+proceedings.+Microwaves%2C+antennas+and+propagation.&cit%3Avol=5&cit%3Aiss=4&cit%3Apg=426&cit%3Adate=Mar+2011&ic=true&cit%3Aprod=Advanced+Technologies+%26+Aerospace+Collection&_a=ChgyMDIxMDUxMDIwMjIwMjQzNjo2Nzk2MDESBjEwMDg2NRoKT05FX1NFQVJDSCIMMTguMTguMjM5LjE2KgcxOTM2MzYxMgoxNjM2NzAyNTA1Og1Eb2N1bWVudEltYWdlQgEwUgZPbmxpbmVaAkZUYgNQRlRqCjIwMTEvMDMvMDFyCjIwMTEvMDMvMzF6AIIBKVAtMTAwNzg1Mi0xMjQ5Mi1DVVNUT01FUi0xMDAwMDIzMy01MDQ4NjM5kgEGT25saW5lygFMTW96aWxsYS81LjAgKFgxMTsgVWJ1bnR1OyBMaW51eCB4ODZfNjQ7IHJ2Ojg3LjApIEdlY2tvLzIwMTAwMTAxIEZpcmVmb3gvODcuMNIBElNjaG9sYXJseSBKb3VybmFsc5oCB1ByZVBhaWSqAi5PUzpFTVMtRG9jVmlld1BkZlVybFNlcnZpY2UtZ2V0TWVkaWFVcmxGb3JJdGVtygIPQXJ0aWNsZXxGZWF0dXJl0gIBWeICAU7yAgD6AgFOggMDV2ViigMcQ0lEOjIwMjEwNTEwMjAyMjAyNDMyOjg1Mzg4Mg%3D%3D&_s=3xxU4Nz07bp9dqMrWeemRkVM%2FxI%3D
 # now that we have q, find gamma L, the closest to origin
-gamma_L = None
-gamma_L_dist = None
-for p in ts.s11data:
-	# if p.freq < resonance_band_from or p.freq > resonance_band_to:
-	# 	continue
-	gamma = p.z
-	distance = abs(gamma)
-	if not gamma_L_dist or distance < gamma_L_dist:
-		# print(p, distance)
-		gamma_L = gamma
-		gamma_L_dist = distance
-print("gamma_L:", gamma_L)
+# gamma_L = None
+# gamma_L_dist = None
+# for p in ts.s11data:
+# 	if p.freq < resonance_band_from or p.freq > resonance_band_to:
+# 		continue
+# 	gamma = p.z
+# 	distance = abs(gamma)
+# 	if not gamma_L_dist or distance < gamma_L_dist:
+# 		# print(p, distance)
+# 		gamma_L = gamma
+# 		gamma_L_dist = distance
+# print("gamma_L:", gamma_L)
 
-gamma_L_angle = np.angle(gamma_L, deg=False)
-print("gamma_L angle (radians):", gamma_L_angle)
-print("gamma_L angle (degrees):", np.rad2deg(gamma_L_angle))
+# gamma_L_angle = np.angle(gamma_L, deg=False)
+# print("gamma_L angle (radians):", gamma_L_angle)
+# print("gamma_L angle (degrees):", np.rad2deg(gamma_L_angle))
 
-diameter = 1 - abs(gamma_L)
+diameter = 2*circle[2]
+# diameter = 1 - abs(gamma_L)
 print("diameter:", diameter)
 
 kappa = diameter / (2 - diameter)
