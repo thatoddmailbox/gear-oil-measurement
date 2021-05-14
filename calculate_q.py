@@ -186,6 +186,8 @@ for i, p in enumerate(ts.s11data):
 			continue
 		index_to = i
 		break
+trim_start = ts.s11data[:index_from+1]
+trim_end = ts.s11data[index_to:]
 ts.s11data = ts.s11data[index_from:index_to+1]
 
 circle = fit_circle(ts)
