@@ -82,6 +82,13 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 	# plt.plot(xc_2 + 1j*yc_2)
 	plt.plot(circle_points, linewidth=0.25)
 
+	plt.annotate(
+		text = '',
+		xy = norm(xc_2 - R_2, yc_2),
+		xytext = norm(xc_2 + R_2, yc_2),
+		arrowprops = dict(arrowstyle='<->')
+	)
+
 	# leg = plt.legend(loc="lower right", fontsize=12)
 	plt.title("Smith Chart")
 
