@@ -27,12 +27,12 @@ def plot_s11(ts: Touchstone, circle: (float, float, float)):
 	plt.ylim(-80,5)
 	# plt.show()
 
-	plt.plot(f/1e9,np.angle(s11),label='S11')
-	# plt.plot(f/1e9,np.angle(s21),label='S21')
-	plt.xlabel('Frequency (GHz)')
-	plt.ylabel('Phase (rad)')
-	plt.ylim(-np.pi,np.pi)
-	# plt.show()
+	# plt.plot(f/1e9,np.angle(s11),label='S11')
+	# # plt.plot(f/1e9,np.angle(s21),label='S21')
+	# plt.xlabel('Frequency (GHz)')
+	# plt.ylabel('Phase (rad)')
+	# plt.ylim(-np.pi,np.pi)
+	# # plt.show()
 
 	plt.figure(figsize=(6, 6))
 
@@ -78,7 +78,7 @@ def calculate_resonance_frequency(ts: Touchstone) -> float:
 			lowest_s11 = abs(p.gain)
 	return lowest_s11_freq
 
-def calculate_half_power_bandwidth(ts: Touchstone, resonant_gain: float) -> float:
+def calculate_half_power_bandwidth(ts: Touchstone, resonant_frequency: float, resonant_gain: float) -> float:
 	# find half power value in decibels
 	half_power = resonant_gain + 3
 	print("half power:", half_power)
@@ -98,7 +98,7 @@ def calculate_half_power_bandwidth(ts: Touchstone, resonant_gain: float) -> floa
 			intercepts.append(p.freq)
 
 	assert(len(intercepts) >= 2)
-	print(resonant_frequency)
+	print("resonant_frequency", resonant_frequency)
 	print(intercepts)
 
 	# find intercepts of half power
@@ -109,6 +109,7 @@ def calculate_half_power_bandwidth(ts: Touchstone, resonant_gain: float) -> floa
 			second_intercept = intercept
 			break
 		first_intercept = intercept
+	print(first_intercept, second_intercept)
 	half_power_bandwidth = second_intercept - first_intercept
 	print(first_intercept, second_intercept, "half power bandwidth:", half_power_bandwidth)
 
