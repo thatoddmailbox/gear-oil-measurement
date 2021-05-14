@@ -34,6 +34,11 @@ water_ranges = {
     './data_water/water_7_1.s1p': (2.883870968e9, 3.358064516e9),
 }
 
+def norm(x: float, y: float) -> List[float]:
+	z = x + 1j*y
+	result = (1 + z)/(1 - z)
+	return result.real, result.imag
+
 def plot_s11(ts: Touchstone, circle: (float, float, float)):
 	f = np.array([d.freq for d in ts.s11data])
 	s11 = np.array([d.z for d in ts.s11data])
