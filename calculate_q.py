@@ -98,7 +98,7 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 	)
 
 	# leg = plt.legend(loc="lower right", fontsize=12)
-	plt.title("Smith Chart")
+	# plt.title("Smith Chart")
 
 	plt.show()
 
