@@ -77,6 +77,10 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 	ax = plt.subplot(1, 1, 1, projection='smith')
 	# plt.plot([10, 100], markevery=1)
 
+	# print(s11)
+	# print(trim_s11)
+	# plt.plot(np.concatenate((s11, trim_s11)), label="default", datatype=SmithAxes.S_PARAMETER)
+
 	plt.plot(s11, label="default", datatype=SmithAxes.S_PARAMETER)
 	plt.plot(trim_s11, label="default", datatype=SmithAxes.S_PARAMETER)
 	plt.plot(circle_points, color='red', markersize=1)
