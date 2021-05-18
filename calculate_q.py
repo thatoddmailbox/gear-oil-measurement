@@ -61,7 +61,7 @@ def plot_s11(ts: Touchstone, circle: (float, float, float), trim_start: List[Dat
 	# plt.ylim(-np.pi,np.pi)
 	# # plt.show()
 
-	plt.figure(figsize=(6, 6))
+	figure = plt.figure(figsize=(6, 6))
 
 	xc_2, yc_2, R_2 = circle
 	print(xc_2, yc_2)
