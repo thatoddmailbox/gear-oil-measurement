@@ -1,7 +1,5 @@
 # Data
-Can 3 is smallest!
-
-## Can 3 in oil
+## Oil contaminated with steel filings
 1.42 L - 0.284 L = 1.136 L of oil
 
 | Trial # | Initial cup mass (g) | Final cup mass (g) | Change in mass (g) | w_0        | Q_L   | Q_0   |
