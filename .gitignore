@@ -141,6 +141,7 @@ cython_debug/
 calibration.txt
 *-points
 *-points-2
+*.cal
 
 # Data
 *.s1p
